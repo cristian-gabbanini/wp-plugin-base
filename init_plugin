@@ -13,6 +13,7 @@ function slugify($text)
   return strtolower(substr(preg_replace('/([A-Z])/','-${1}', $text), 1));
 }
 
+$slug = slugify($name);
 
 echo 'Initializing plugin' . PHP_EOL;
 $init = file_get_contents($path . DIRECTORY_SEPARATOR . 'init/__init.php');
@@ -27,4 +28,44 @@ $plugin = str_replace(['{PREFIX}', '{PLUGIN_NAME}', '{PLUGIN_NAMESPACE}'],[ $pre
 
 file_put_contents($path . DIRECTORY_SEPARATOR . '/config/plugin.php', $plugin);
 
-file_put_contents(slugify($name) . '.php', '');
+
+$main = file_get_contents($path . DIRECTORY_SEPARATOR . 'init/__main.php');
+
+
+$main = str_replace([
+	'{PREFIX}',
+	'{PLUGIN_NAME}',
+	'{PLUGIN_LOWERCASE_NAME}',
+	'{PLUGIN_NAMESPACE}',
+	'{PLUGIN_SLUG}',
+],[
+	$prefix,
+	$name,
+	strtolower($name),
+	$namespace,
+	$slug
+], $main);
+
+file_put_contents(slugify($name) . '.php', $main);
+
+mkdir($name, 775);
+
+$class = <<<EOT
+<?php
+
+namespace $namespace;
+
+use Begenius\Plugin;
+use Begenius\Request;
+
+class $name extends Plugin
+{
+   public function options_page()
+   {
+	// Code here
+   }
+}
+
+EOT;
+
+file_put_contents($name . '/' . 'class-' . strtolower($name) . '.php', $class);
