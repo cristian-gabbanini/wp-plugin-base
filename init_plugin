@@ -1,0 +1,23 @@
+#!/usr/bin/php
+
+<?php
+
+$path = dirname ( __FILE__ );
+
+$name = readline('Insert plugin name: ');
+$prefix = readline('Insert the 4 letter plugin prefix: ');
+$namespace = readline('Insert plugin namespace: ' );
+
+
+echo 'Initializing plugin' . PHP_EOL;
+$init = file_get_contents($path . DIRECTORY_SEPARATOR . 'init/__init.php');
+
+$init = str_replace(['{PREFIX}', '{PLUGIN_NAME}', '{PLUGIN_NAMESPACE}'],[ $prefix, strtolower($name), $namespace], $init);
+
+file_put_contents($path . DIRECTORY_SEPARATOR . 'init/init.php', $init);
+
+$plugin = file_get_contents($path . DIRECTORY_SEPARATOR . '/init/__plugin.php');
+
+$plugin = str_replace(['{PREFIX}', '{PLUGIN_NAME}', '{PLUGIN_NAMESPACE}'],[ $prefix, $name, $namespace], $plugin);
+
+file_put_contents($path . DIRECTORY_SEPARATOR . 'config/plugin.php', $plugin);
