@@ -8,6 +8,11 @@ $name = readline('Insert plugin name: ');
 $prefix = readline('Insert the 4 letter plugin prefix: ');
 $namespace = readline('Insert plugin namespace: ' );
 
+function slugify($text)
+{
+  return strtolower(substr(preg_replace('/([A-Z])/','-${1}', $text), 1));
+}
+
 
 echo 'Initializing plugin' . PHP_EOL;
 $init = file_get_contents($path . DIRECTORY_SEPARATOR . 'init/__init.php');
@@ -16,8 +21,10 @@ $init = str_replace(['{PREFIX}', '{PLUGIN_NAME}', '{PLUGIN_NAMESPACE}'],[ $prefi
 
 file_put_contents($path . DIRECTORY_SEPARATOR . 'init/init.php', $init);
 
-$plugin = file_get_contents($path . DIRECTORY_SEPARATOR . '/init/__plugin.php');
+$plugin = file_get_contents($path . DIRECTORY_SEPARATOR . 'init/__plugin.php');
 
 $plugin = str_replace(['{PREFIX}', '{PLUGIN_NAME}', '{PLUGIN_NAMESPACE}'],[ $prefix, $name, $namespace], $plugin);
 
-file_put_contents($path . DIRECTORY_SEPARATOR . 'config/plugin.php', $plugin);
+file_put_contents($path . DIRECTORY_SEPARATOR . '/config/plugin.php', $plugin);
+
+file_put_contents(slugify($name) . '.php', '');
